@@ -17,6 +17,7 @@ func UpdateProductMiddleware(next http.Handler) http.Handler {
 
 		if id == "" {
 			render.Render(w, r, errInvalidRequest(errors.New("product id is required")))
+			return
 		}
 
 		decoder := json.NewDecoder(r.Body)
@@ -25,10 +26,12 @@ func UpdateProductMiddleware(next http.Handler) http.Handler {
 		err := decoder.Decode(&product)
 		if err != nil {
 			render.Render(w, r, errInvalidRequest(err))
+			return
 		}
 
 		if product.Name == "" {
 			render.Render(w, r, errInvalidRequest(errors.New("product name is required")))
+			return
 		}
 
 		productRepo, ok := r.Context().Value("repo").(repository.ProductRepository)
@@ -42,6 +45,7 @@ func UpdateProductMiddleware(next http.Handler) http.Handler {
 
 		if err != nil {
 			render.Render(w, r, errRepository(err))
+			return
 		}
 
 		next.ServeHTTP(w, r)

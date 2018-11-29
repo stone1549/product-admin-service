@@ -27,10 +27,12 @@ func NewProductMiddleware(next http.Handler) http.Handler {
 		err := decoder.Decode(&product)
 		if err != nil {
 			render.Render(w, r, errInvalidRequest(err))
+			return
 		}
 
 		if product.Name == "" {
 			render.Render(w, r, errInvalidRequest(errors.New("product name is required")))
+			return
 		}
 
 		productRepo, ok := r.Context().Value("repo").(repository.ProductRepository)
@@ -44,6 +46,7 @@ func NewProductMiddleware(next http.Handler) http.Handler {
 
 		if err != nil {
 			render.Render(w, r, errRepository(err))
+			return
 		} else if id == "" {
 			render.Render(w, r, errUnknown(errors.New("unable to determine whether or not product was inserted")))
 			return
